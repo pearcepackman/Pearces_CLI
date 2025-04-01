@@ -50,10 +50,6 @@ class mycli(cmd.Cmd):
         console.print(goodbye, style='red bold')
         return True
 
-    def do_fart(self, line):
-        """Type 'fart' to hear a silly joke"""
-        print("FART")
-
     def do_add(self, line):
         """Type 'add' to add two variables"""
         func_name = "addition >> "
