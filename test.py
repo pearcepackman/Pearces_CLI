@@ -8,6 +8,7 @@ console = Console()
 class mycli(cmd.Cmd):
     def __init__(self):
         super().__init__()
+        
         # Set the initial prompt with the current working directory
         self.current_directory = os.getcwd()
         # Explicitly set the prompt to the current directory
@@ -31,12 +32,15 @@ class mycli(cmd.Cmd):
                
                                                                      """
     myname = Align.center(myname)
+    os.system("clear")
     console.print(myname, style='red bold')
     startupmsg = "Welcome to PCLI! To see available commands, type 'help'"
     console.print(startupmsg, style='green bold')
+    
 
     def do_quit(self, line):
         """Type 'quit' to exit the CLI"""
+        os.system("clear")
         goodbye = """
 
    ______ ____   ____   ____   ____ __  __ ______
@@ -119,7 +123,7 @@ class mycli(cmd.Cmd):
         console.print(" "+os.path.basename(self.current_directory), style='green')
         for item in files_directories:
             
-            console.print(" |")
+            
             console.print(" |")
             console.print(" |-- "+item)
             subdir = 0
@@ -157,7 +161,7 @@ class mycli(cmd.Cmd):
                 console.print("")
                 ans = input("You are about to delete a file, are you sure you want to do this? y or n: ")
                 if ans == "y":
-                    console.print(f"{os.getcwd()}/{line} REMOVED!")
+                    console.print(f"{os.getcwd()}/{line} REMOVED!", style = "red")
                     os.chmod(os.getcwd()+"/"+line, 0o777)
                     os.remove(os.getcwd()+"/"+line)
             except FileNotFoundError:
@@ -186,12 +190,106 @@ class mycli(cmd.Cmd):
                 console.print("No such directory exists!", style = "red")
         
         else: console.print("No directory specified!", style = "red")
+    
+    def do_mktxt(self, line):
+        """Makes text file in current directory"""
+        if line:
+            
+            console.print("Enter text (end with /e)")
+            console.print("To go back a line, type /b")
+            line_counter = 0
+            lines = []
+            while True:
+                user_input = input(f"{len(lines)}: ")
+                if user_input.endswith("/e"):
+                    lines.append(user_input[:-2])  
+                    break
+                elif user_input.endswith("/b"):
+                    
+                    
+                    lines.append(console.input(f"Editing line {len(lines)-1}: "))
+                    
+                    lines.pop(-2)
+                    
+
+                if user_input != "/b":
+                    lines.append(user_input)
+                line_counter += 1
+                
+            with open(f"{os.getcwd()}/{line}", 'w') as file:
+                file.write("\n".join(lines))
+            
+    def do_readtxt(self, line):
+        """Reads text file"""
+        if line:
+            console.print("")
+            with open(f"{os.getcwd()}/{line}", 'r') as file:
+                line_num = 0
+                for line in file:
+                    console.print(f"{line_num}: {line.strip()}")
+                    line_num += 1
+                #console.print(file.read())
+        console.print("")
+            
+
+    def do_clear(self, line):
+        os.system("clear")
+
+    def do_screensaver(self, line):
+        ss1 = """
+
+ _______  _______  _       _________
+(  ____ )(  ____ \( \      \__   __/
+| (    )|| (    \/| (         ) (   
+| (____)|| |      | |         | |   
+|  _____)| |      | |         | |   
+| (      | |      | |         | |   
+| )      | (____/\| (____/\___) (___
+|/       (_______/(_______/\_______/
+                                     """
+        belowmsg = """
+
+______  _   _  _____  _    _____   _____  _   _  ______ __   __ _   _  _____  _____  _   _ 
+| ___ \| | | ||_   _|| |  |_   _| |_   _|| \ | | | ___ \\ \ / /| | | ||_   _||  _  || \ | |
+| |_/ /| | | |  | |  | |    | |     | |  |  \| | | |_/ / \ V / | |_| |  | |  | | | ||  \| |
+| ___ \| | | |  | |  | |    | |     | |  | . ` | |  __/   \ /  |  _  |  | |  | | | || . ` |
+| |_/ /| |_| | _| |_ | |____| |    _| |_ | |\  | | |      | |  | | | |  | |  \ \_/ /| |\  |
+\____/  \___/  \___/ \_____/\_/    \___/ \_| \_/ \_|      \_/  \_| |_/  \_/   \___/ \_| \_/
+
+                                                                                            """
+        
+        mymsg = """
+
+______  _____   ___  ______  _____  _____  _  _____   _____  _      _____ 
+| ___ \|  ___| / _ \ | ___ \/  __ \|  ___|( )/  ___| /  __ \| |    |_   _|
+| |_/ /| |__  / /_\ \| |_/ /| /  \/| |__  |/ \ `--.  | /  \/| |      | |  
+|  __/ |  __| |  _  ||    / | |    |  __|     `--. \ | |    | |      | |  
+| |    | |___ | | | || |\ \ | \__/\| |___    /\__/ / | \__/\| |____ _| |_ 
+\_|    \____/ \_| |_/\_| \_| \____/\____/    \____/   \____/\_____/ \___/ 
+                                                                          
+
+
+
+
+
+
+
+                                                                          
+"""
+        ss1 = Align.center(ss1)
+        belowmsg = Align.center(belowmsg)
+        mymsg = Align.center(mymsg)
+        os.system("clear")
+        console.print(ss1, style = 'red blink')
+        console.print(mymsg, style = "blue")
+        console.print(belowmsg, style = '#969493')
 
     def postcmd(self, stop, line):
         """This function is called after each command to update the prompt."""
         # Ensure prompt is set after the command
         self.prompt = f"{os.getcwd()} PCLI Command Line >> "
         return stop
+
 
 if __name__ == '__main__':
     mycli().cmdloop()
