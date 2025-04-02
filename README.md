@@ -4,6 +4,8 @@
 - Moving around directories
 - Listing items in directories
 - Making/Deleting directories
+- Reading/Writing text files
+- Screensaver
   
 ## Updates: 
 ### 4/1/24:
