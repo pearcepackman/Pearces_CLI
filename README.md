@@ -11,6 +11,7 @@
 ### 4/1/24:
 - Created first update
 ### 4/2/24:
+- Added executable file in dist/test
 - Added reading and writing text files
 - Added screensaver
 - Small bugfix on listtree
