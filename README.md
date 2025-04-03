@@ -1,5 +1,5 @@
 # PCLI (Pearce's CLI)
-
+![alt text](https://github.com/pearcepackman/Pearces_CLI/blob/main/Screenshots/Screenshot%202025-04-03%20at%201.26.46%E2%80%AFPM.png "Screenshot")
 ## Features:
 - Basic Mathematics
 - Moving around directories
