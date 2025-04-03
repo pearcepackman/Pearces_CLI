@@ -3,15 +3,17 @@ from rich.console import Console
 from rich.align import Align
 import os
 
+from datetime import date
+from datetime import datetime
+
 console = Console()
 
 class mycli(cmd.Cmd):
+    #Initializing stuff
     def __init__(self):
         super().__init__()
-        
-        # Set the initial prompt with the current working directory
+        ##Gets current directory and uses it as prompt so "file_path PCLI Command Line >> "
         self.current_directory = os.getcwd()
-        # Explicitly set the prompt to the current directory
         self.prompt = f"{self.current_directory} PCLI Command Line >> "
         
     myname = """
@@ -34,10 +36,11 @@ class mycli(cmd.Cmd):
     myname = Align.center(myname)
     os.system("clear")
     console.print(myname, style='red bold')
+    # Startup stuff
     startupmsg = "Welcome to PCLI! To see available commands, type 'help'"
     console.print(startupmsg, style='green bold')
     
-
+    #Quits out of the CLI and displays message
     def do_quit(self, line):
         """Type 'quit' to exit the CLI"""
         os.system("clear")
@@ -56,13 +59,14 @@ class mycli(cmd.Cmd):
 
     def do_add(self, line):
         """Type 'add' to add two variables"""
-        func_name = "addition >> "
+        func_name = "Addition >> "
         self.prompt = f"{self.current_directory} {func_name}"
         while True:
             try:
                 num1 = int(input(f"{self.prompt}Number 1: "))
                 num2 = int(input(f"{self.prompt}Number 2: "))
                 console.print(f"{self.prompt}The result of {num1} + {num2} = {num1 + num2}")
+                console.print("")
                 break
             except ValueError:
                 console.print("Invalid input, use numbers only", style="red")
@@ -76,6 +80,7 @@ class mycli(cmd.Cmd):
                 num1 = int(input(f"{self.prompt}Number 1: "))
                 num2 = int(input(f"{self.prompt}Number 2: "))
                 console.print(f"{self.prompt}The result of {num1} - {num2} = {num1 - num2}")
+                console.print("")
                 break
             except ValueError:
                 console.print("Invalid input, use numbers only", style="red")
@@ -89,6 +94,7 @@ class mycli(cmd.Cmd):
                 num1 = int(input(f"{self.prompt}Number 1: "))
                 num2 = int(input(f"{self.prompt}Number 2: "))
                 console.print(f"{self.prompt}The result of {num1} * {num2} = {num1 * num2}")
+                console.print("")
                 break
             except ValueError:
                 console.print("Invalid input, use numbers only", style="red")
@@ -103,6 +109,7 @@ class mycli(cmd.Cmd):
                 num2 = int(input(f"{self.prompt}Number 2: "))
                 res = round(num1 / num2, 4)
                 console.print(f"{self.prompt}The result of {num1} / {num2} = {res}")
+                console.print("")
                 break
             except ValueError:
                 console.print("Invalid input, use numbers only", style="red")
@@ -145,7 +152,7 @@ class mycli(cmd.Cmd):
         console.print("")
 
     def do_mkd(self, line):
-        """Makes a folder"""
+        """Makes a directory"""
         if line:
             try:
                 os.mkdir(line)
@@ -156,6 +163,7 @@ class mycli(cmd.Cmd):
         else: console.print("Error: No filename specified!", style = "red")
     
     def do_rm(self, line):
+        """Removes whatever is at the filepath specified"""
         if line:
             try:
                 console.print("")
@@ -223,19 +231,52 @@ class mycli(cmd.Cmd):
         """Reads text file"""
         if line:
             console.print("")
-            with open(f"{os.getcwd()}/{line}", 'r') as file:
-                line_num = 0
-                for line in file:
-                    console.print(f"{line_num}: {line.strip()}")
-                    line_num += 1
-                #console.print(file.read())
+            try:
+                with open(f"{os.getcwd()}/{line}", 'r') as file:
+                    line_num = 0
+                    for line in file:
+                        console.print(f"{line_num}: {line.strip()}")
+                        line_num += 1
+                    #console.print(file.read())
+            except:
+                console.print("Error, file not found!", style = 'red')
         console.print("")
-            
+    
+    def do_edittxt(self, line):
+        """Edits text file"""
+        if line: 
+            console.print("")
+            with open(f"{os.getcwd()}/{line}", 'r+') as file:
+                lines = file.readlines()
+                
+            for line_num, fileline in enumerate(lines):
+                console.print(f"{line_num}: {fileline.strip()}")
+
+            try:
+                edit_line = int(console.input("What line do you want to edit?: "))
+
+                if 0 <= edit_line < len(lines):
+                    newline = console.input(f"Editing line #{edit_line}: ")
+                    lines[edit_line] = newline+"\n"
+
+                    with open(f"{os.getcwd()}/{line}", 'w') as file:
+                        file.seek(0)
+                        file.writelines(lines)
+                        file.truncate
+                    
+                else: 
+                    console.print("Error, line does not exist!", style='red')
+            except:
+                console.print("Error, invalid input", style = "red")
+
+             
 
     def do_clear(self, line):
+        """Clears the window"""
         os.system("clear")
 
     def do_screensaver(self, line):
+        """This one is pretty self-explanatory, give it a shot!"""
         ss1 = """
 
  _______  _______  _       _________
@@ -284,9 +325,36 @@ ______  _____   ___  ______  _____  _____  _  _____   _____  _      _____
         console.print(mymsg, style = "blue")
         console.print(belowmsg, style = '#969493')
 
+    def do_history(self, line):
+        try:
+            history_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'history')
+            history_text_path = os.path.join(history_dir, str(date.today()))
+            with open(history_text_path, 'r') as historytext:
+                console.print("")
+                console.print(f"Command history for {date.today()}")
+                for line in historytext:
+                    console.print(f"{line.strip()}")
+            console.print("")
+        except:
+            console.print("Error, history file does not exist yet!", style = 'red')
     def postcmd(self, stop, line):
         """This function is called after each command to update the prompt."""
-        # Ensure prompt is set after the command
+        history_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'history')
+        if line:
+            try:
+                if not os.path.exists(history_dir):
+                    os.mkdir(history_dir)
+
+                history_text_path = os.path.join(history_dir, str(date.today()))
+                
+                if line != "quit":
+                    with open(history_text_path, 'a') as historytext:
+                        historytext.write(f"\n{datetime.now()} - {line}")
+                else:
+                    with open(history_text_path, 'a') as historytext:
+                        historytext.write(f"\n{datetime.now()} ------------- QUIT SESSION ------------- ")
+            except:
+                console.print("ERROR", style='red')
         self.prompt = f"{os.getcwd()} PCLI Command Line >> "
         return stop
 
