@@ -1,4 +1,5 @@
-# CLI Created in Python
+# PCLI (Pearce's CLI)
+
 ## Features:
 - Basic Mathematics
 - Moving around directories
